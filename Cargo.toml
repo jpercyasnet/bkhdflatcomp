@@ -1,0 +1,11 @@
+[package]
+name = "bkhdflatcomp01"
+version = "0.1.0"
+authors = ["jpretired"]
+edition = "2021"
+publish = false
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+chrono = "^0"
