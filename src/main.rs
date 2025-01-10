@@ -348,9 +348,11 @@ fn main()  {
                             }
                             if linenumbk == 2 {
                                 bkmd5save = bkmd5z;
+//                                writeln!(&mut errfile, "x-{}-{}", bkfilenmz, bkmd5save).unwrap();
                                 vecbksavefiles.push(bkfilenmz);
                             } else {   
                                 if bkmd5save == bkmd5z {
+//                                    writeln!(&mut errfile, "y-{}-{}", bkfilenmz, bkmd5save).unwrap();
                                     vecbksavefiles.push(bkfilenmz);
                                 } else {
                                     bkmd5curr = bkmd5z;                                                 
@@ -397,7 +399,11 @@ fn main()  {
                              linestatnum = 0;
                          }
                          let vecline: Vec<&str> = linehd.split("|").collect();
-                         linehdfmt = format!("{}|{}|{}|{}|{}|{}|{}", vecline[4], vecline[0], vecline[3], vecline[1], vecline[2], vecline[5], linenumx);
+                         let mut hdfilemd5: String = vecline[5].to_string();
+                         if hdfilemd5.len() > 32 {
+                             hdfilemd5 = hdfilemd5[..32].to_string();
+                         }
+                         linehdfmt = format!("{}|{}|{}|{}|{}|{}|{}", vecline[4], vecline[0], vecline[3], vecline[1], vecline[2], hdfilemd5, linenumx);
                          let inptdir = vecline[3].to_string();
                          let mut inptfilenm: String = vecline[0].to_string();
                          if inptfilenm[..1].to_string() == '"'.to_string() {
@@ -422,12 +428,11 @@ fn main()  {
                               }
                          }
                          if bnotex {
-                             let hdfilemd5: String = vecline[5].to_string();
                              
  //                            println!("read hd hdfilemd5 {} bkmd5save {}  bkmd5curr {}", hdfilemd5, bkmd5save, bkmd5curr);
                              if hdfilemd5 > bkmd5save || bkmd5save == "none".to_string() {
 //                                 let stroutput = format!("{}|{} 4 {} {} {}", linehd, linenumx, hdfilemd5, bkmd5save, bkmd5curr);
-                                 writeln!(&mut nobkupfile, "{}", linehdfmt).unwrap();
+                                 writeln!(&mut nobkupfile, "1-{}", linehdfmt).unwrap();
                              } else if hdfilemd5 == bkmd5save {
                                  let mut nummatch = 0;
                                  for bk in &vecbksavefiles {
@@ -438,20 +443,20 @@ fn main()  {
                                  }
                                  if nummatch < 1 {
 //                                     let stroutput = format!("{}|{} 3 {} {} {}", linehd, linenumx, hdfilemd5, bkmd5save, bkmd5curr);
-                                     writeln!(&mut nobkupfile, "{}", linehdfmt).unwrap();
+                                     writeln!(&mut nobkupfile, "2-{}", linehdfmt).unwrap();
                                  } else if nummatch < 2 {
 //                                     let stroutput = format!("{}|{}", linehd, linenumx);
-                                     writeln!(&mut just1file, "{}", linehdfmt).unwrap();
+                                     writeln!(&mut just1file, "2-{}", linehdfmt).unwrap();
                                  } else {
 //                                     let stroutput = format!("{}|{}", linehd, linenumx);
-                                     writeln!(&mut more1file, "{}", linehdfmt).unwrap();
+                                     writeln!(&mut more1file, "2-{}", linehdfmt).unwrap();
                                  }
                              } else {
                                  if bolbkend {
                                      bkmd5save = "none".to_string();
                                      bkmd5curr = "none".to_string();
 //                                     let stroutput = format!("{}|{} 5 {} {} {}", linehd, linenumx, hdfilemd5, bkmd5save, bkmd5curr);
-                                     writeln!(&mut nobkupfile, "{}", linehdfmt).unwrap();
+                                     writeln!(&mut nobkupfile, "3-{}", linehdfmt).unwrap();
                                      
                                  } else if hdfilemd5 <= bkmd5curr {
                                  
@@ -460,6 +465,8 @@ fn main()  {
                                      vecbksavefiles.clear();
                                      bkmd5save = bkmd5curr.clone();
                                      vecbksavefiles.push(bkfilecurr.clone());
+//                                     writeln!(&mut errfile, "a-{}-{}", bkfilecurr, linehdfmt).unwrap();
+
                                      let mut bolfirst = true;
                                      loop {
                                            match readerbk.read_line(&mut linebk) {
@@ -494,15 +501,18 @@ fn main()  {
                                                           }
                                                           if bolfirst {
                                                               if bkmd5save == bkmd5a {
+//                                                                  writeln!(&mut errfile, "b-{}-{}", bkfilenma, linehdfmt).unwrap();
                                                                   vecbksavefiles.push(bkfilenma);
                                                               } else {
                                                                   vecbksavefiles.clear();
                                                                   bkmd5save = bkmd5a;
+//                                                                  writeln!(&mut errfile, "c-{}-{}", bkfilenma, linehdfmt).unwrap();
                                                                   vecbksavefiles.push(bkfilenma);
                                                               }
                                                               bolfirst = false;
                                                           } else {
                                                               if bkmd5save == bkmd5a {
+//                                                                  writeln!(&mut errfile, "d-{}-{}", bkfilenma, linehdfmt).unwrap();
                                                                   vecbksavefiles.push(bkfilenma);
                                                               } else {
                                                                   bkmd5curr = bkmd5a;
@@ -535,21 +545,22 @@ fn main()  {
                                          }
                                          if nummatch < 1 {
 //                                             let stroutput = format!("{}|{}", linehd, linenumx);
-                                             writeln!(&mut nobkupfile, "{}", linehdfmt).unwrap();
+                                             writeln!(&mut nobkupfile, "4-{}", linehdfmt).unwrap();
                                          } else if nummatch < 2 {
 //                                             let stroutput = format!("{}|{}", linehd, linenumx);
-                                             writeln!(&mut just1file, "{}", linehdfmt).unwrap();
+                                             writeln!(&mut just1file, "4-{}", linehdfmt).unwrap();
                                          } else {
 //                                             let stroutput = format!("{}|{}", linehd, linenumx);
-                                             writeln!(&mut more1file, "{}", linehdfmt).unwrap();
+                                             writeln!(&mut more1file, "4-{}-{:?}-{}", nummatch, vecbksavefiles, linehdfmt).unwrap();
                                          }
                                      } else {
-//                                         let stroutput = format!("{}|{} 1 {} {} {}", linehd, linenumx, hdfilemd5, bkmd5save, bkmd5curr);
-                                         writeln!(&mut nobkupfile, "{}", linehdfmt).unwrap();
+//                                         let stroutput = format!("{}|{} --{}--{}--{}--", linehdfmt, hdfilemd5, bkmd5save, bkmd5curr);
+//                                         writeln!(&mut nobkupfile, "5-{}", stroutput).unwrap();
+                                         writeln!(&mut nobkupfile, "5-{}", linehdfmt).unwrap();
                                      }
                                  } else {
 //                                     let stroutput = format!("{}|{} 2 {} {} {}", linehd, linenumx, hdfilemd5, bkmd5save, bkmd5curr);
-                                     writeln!(&mut nobkupfile, "{}", linehdfmt).unwrap();
+                                     writeln!(&mut nobkupfile, "6-{}", linehdfmt).unwrap();
                                  }
                              }
                          }
